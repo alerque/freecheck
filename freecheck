@@ -24,10 +24,17 @@
 #
 #---------------
 
-$version = "0.3";
-$ConfigFile = "freecheck.cfg";
+$version = "0.3.1";
+$systemConfigFile = "/etc/freecheck/freecheck.cfg";
+$ConfigFile = $ENV{"HOME"} . "/.freecheck.cfg";
 
 use Getopt::Long;
+use File::Copy qw(copy);
+
+
+if ( ! -e $ConfigFile ) {
+	copy $systemConfigFile, $ConfigFile;
+}
 
 # This tells us how to format the strings from the cfg file
 # so we can print it as a PostScript definition
