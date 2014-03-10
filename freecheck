@@ -24,7 +24,7 @@
 #
 #---------------
 
-$version = "0.3.1";
+$version = "0.30.1";
 $systemConfigFile = "/etc/freecheck/freecheck.cfg";
 $ConfigFile = $ENV{"HOME"} . "/.freecheck.cfg";
 
