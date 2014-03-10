@@ -47,6 +47,10 @@ use CGI qw(:standard);
 # The path to the GhostScript executable, with escaped "/"s
 $GS = "\/usr\/bin\/gs";
 
+# Parameters to GhostScript to generate PDFs (trailing "-" means STDIN
+$PDFOptions = "-q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=- -";
+
+
 # Get the cookie to set the defaults, if it's there...
 %pairs_hash = cookie('FreeCheck');
 
@@ -59,6 +63,7 @@ if (!%pairs_hash) {
 }
 
 # If we have no parameters passed, generate the initial page with default vals
+# Those defaults might be from a cookie (above) if one has been set.
 if (!param()) {
 	print header;
 	print start_html('FreeCheck Online'),
@@ -67,9 +72,16 @@ if (!param()) {
 	h1('FreeCheck'),
 	"A free check printing utility",
 	br,
+	"Version 0.21",
+	br,
 	"Copyright (C) 2000 Eric Sandeen (eric_sandeen @ bigfoot.com)",
 	hr,
-
+	"WARNING - unless you're brave, treat this application as a
+	proof-of-concept, rather than a useful utility.  I have not
+	had a chance to test this stuff with a bank yet, and I'm also
+	a bit concerned about the accuracy during conversion to 
+	PDF.  Just don't go paying your rent with this yet, ok?  :)",
+	hr,
 	start_form,
 	submit(	-name=>"Submit",
 		-label=>" Get my checks! "),
@@ -77,71 +89,116 @@ if (!param()) {
 	h3('Account Holder Information'),
 
 	textfield(	-name=>'Name1',
-			-default=>$pairs_hash{"Name1"}),
+			-default=>$pairs_hash{"Name1"},
+			-maxlength=>50),
 	" Name 1", br,
 
 	textfield(	-name=>'Name2',
-			-default=>$pairs_hash{"Name2"}),
+			-default=>$pairs_hash{"Name2"},
+			-maxlength=>50),
 	" Name 2", br,
 
 	textfield(	-name=>'Address1',
-			-default=>$pairs_hash{"Address1"}),
+			-default=>$pairs_hash{"Address1"},
+			-maxlength=>50),
 	" Address Line 1", br,
 
 	textfield(	-name=>'Address2',
-			-default=>$pairs_hash{"Address2"}),
+			-default=>$pairs_hash{"Address2"},
+			-maxlength=>50),
 	" Address Line 2", br,
 
 	textfield(	-name=>'CityStateZip',
-			-default=>$pairs_hash{"CityStateZip"}),
+			-default=>$pairs_hash{"CityStateZip"},
+			-maxlength=>50),
 	" City, State, Zip", br,
 
 	textfield(	-name=>'PhoneNumber',
-			-default=>$pairs_hash{"PhoneNumber"}),
+			-default=>$pairs_hash{"PhoneNumber"},
+			-maxlength=>50),
 	" Phone Number", br,
 
-	h3('Account Information'),
-	textfield(	-name=>'RoutingNumber',
-			-default=>$pairs_hash{"RoutingNumber"},
-			-size=>9, -maxlength=>9),
-	" Routing Number", br,
+	h3('MICR Line Information'),
+	"Pay close attention here - this is where you enter the MICR
+	 line at the bottom of your check.  For the following symbols,
+         use these characters:", p,
 
-	textfield(	-name=>'AccountNumber',
-			-default=>$pairs_hash{"AccountNumber"}), 
-	" Account Number", br,
+	hr,
+	img {-src=>'/images/transit.gif'}, " = \"R\"", br,
+	img {-src=>'/images/onus.gif'}, " = \"P\"", br,
+	img {-src=>'/images/dash.gif'}, " = \"-\" (dash, or minus)", p,
+	"For spaces, enter \"S\"", p,
+	"For check numbers, enter a \"C\" for each check digit", p,
+	hr,
+
+	"Auxiliary On-Us field - Everything to the left of the leftmost ",
+	img {-src=>'/images/transit.gif'}, " symbol",  br,
+	em("Don't forget to include trailing spaces (\"S\")!"), br,
+	"This field may not be present on personal checks", br,
+
+	textfield(	-name=>'AuxOnUs',
+			-default=>$pairs_hash{"AuxOnUs"},
+			-maxlength=>50),
+
+	" Auxiliary On-Us field", p,
+	
+	"Transit / Routing Field - 9 numbers between, and including, the ",
+	img {-src=>'/images/transit.gif'}, " symbols",  br, 
+	
+	textfield(	-name=>'Routing',
+			-default=>$pairs_hash{"Routing"},
+			-size=>11, -maxlength=>11),
+
+	" Routing Field", p,
+
+	"On-Us field - everything to the right of the rightmost ",
+	img {-src=>'/images/transit.gif'}, " symbol",  br,
+	em("Don't forget to include leading spaces (\"S\")!"), br,
+
+	textfield(	-name=>'OnUs',
+			-default=>$pairs_hash{"OnUs"},
+			-maxlength=>50),
+
+	" On-Us field", p,
 
 	textfield(	-name=>'Fraction', 
-			-default=>$pairs_hash{"Fraction"}), 
-	" Fraction (top of check)", br,
+			-default=>$pairs_hash{"Fraction"},
+			-maxlength=>50), 
+
+	" Fraction (printed at top right of check)", br,
 
 	h3('Bank Information'),
 	textfield(	-name=>'BankName', 
-			-default=>$pairs_hash{"BankName"}), 
+			-default=>$pairs_hash{"BankName"},
+			-maxlength=>50), 
 	" Bank Name", br,
 
 	textfield(	-name=>'BankAddr1', 
-			-default=>$pairs_hash{"BankAddr1"}),
+			-default=>$pairs_hash{"BankAddr1"},
+			-maxlength=>50),
 	" Bank Address1", br,
 
 	textfield(	-name=>'BankAddr2', 
-			-default=>$pairs_hash{"BankAddr2"}),
+			-default=>$pairs_hash{"BankAddr2"},
+			-maxlength=>50),
 	" Bank Address 2", br,
 
 	textfield(	-name=>'BankCityStateZip', 
-			-default=>$pairs_hash{"BankCityStateZip"}),
+			-default=>$pairs_hash{"BankCityStateZip"},
+			-maxlength=>50),
 	" Bank City, State, Zip", br,
 
 	h2('Printing Options'),
 	textfield(	-name=>'CheckNumber', 
 			-default=>$pairs_hash{"CheckNumber"}, 
-			-size=>7, 
-			-maxlength=>7),
+			-size=>10, 
+			-maxlength=>10),
 	" Starting Check Number", 
 	br,
 
 	"Select check style: ",
 	popup_menu(	-name=>'CheckStyle',
-			-values=>['Normal'],
+			-values=>['Normal','Quicken_Personal'],
 			-default=>$pairs_hash{"CheckStyle"}),
 	br,
 
@@ -177,6 +234,9 @@ if (!param()) {
 	br,
 	em("Be sure to de-select \"Fit to Page\" when printing PDFs"),
 	br,
+	em("To view PostScript correctly, you must have the
+	    GnuMICR font installed locally"),
+	br,
 	radio_group(	-name=>'OutputType', 
 			-values=>['PDF', 'PostScript'],
 			-labels=>{'PDF'=>' PDF', 
@@ -189,7 +249,7 @@ if (!param()) {
 	textfield(	-name=>'NumPages', 
 			-default=>$pairs_hash{"NumPages"},
 			-size=>2, 
-			-maxlength=>80),
+			-maxlength=>1),
 	p,
 
 	"Save information in a cookie?",
@@ -282,15 +342,17 @@ if (param("Submit")) {
 	# Let's not go spawning any new shells (this is minimal security...)
 	# Also checks for SSI strings
 
+	# Look for SSI
 	if ($pairs_string =~ /\<\!--\#(.*)\s+(.*)\s?=\s?(.*)--\>/s) {
 		kill_input();
 	}
 
-	if ($pairs_string =~ /[;><\*`\|]/s) {
+	if ($arguments =~ /\<\!--\#(.*)\s+(.*)\s?=\s?(.*)--\>/s) {
 		kill_input();
 	}
 
-	if ($arguments =~ /\<\!--\#(.*)\s+(.*)\s?=\s?(.*)--\>/s) {
+	# Look for shell metachars
+	if ($pairs_string =~ /[;><\*`\|]/s) {
 		kill_input();
 	}
 
@@ -312,18 +374,6 @@ if (param("Submit")) {
 					-domain=>server_name());
 	}
 
-	# Generate the apropriate header.
-	if (param("OutputType") eq "PDF") {
-		$PDFConvert = "\| $GS -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=- -";
-		print header(	-type=>'application/pdf',
-				-attachment=>'mychecks.pdf',
-				-cookie=>$cookie);
-	} else {
-		print header(	-type=>'application/postscript',
-				-attachment=>'mychecks.ps',
-				-cookie=>$cookie);
-	}
-
 	# Generate the actual output.  
 	# The PDF thing might become an option in the main script
 	# soon...
@@ -335,8 +385,53 @@ if (param("Submit")) {
 	# MADE TO SANITIZE THOSE STRINGS, BUT THERE COULD STILL BE 
 	# A SECURITY RISK HERE.  YOU HAVE BEEN WARNED
 
-	print (`.\/freecheck --cgi \"$pairs_string\" $arguments $PDFConvert`);
+	if (param("OutputType") eq "PDF") {
+		$PDFConvert = "\| $GS $PDFOptions";
+	}
 
+	#print (`.\/freecheck --cgi \"$pairs_string\" $arguments \| $GS $PDFConvert`);
+	# This is just the postscript result, or the error:
+	$Result = `.\/freecheck --cgi \"$pairs_string\" $arguments`;
+
+	if (length($Result) < 500 ) { # Anything this short is an error...
+		print header;
+		print start_html("We encountered an error...");
+		print h1("There are some errors on your form:");
+		# HTML-ify the result ( \n to <br> )
+		$Result =~ s/\n/<br>/gsm;
+		print $Result;
+		print br;
+		print "Press the Back button on your browser to fix them...";
+		print p;
+		print em("If you select \"Print voided test checks\" then
+			  MICR consistency checking will not be performed");
+		print end_html;
+		exit;
+	}
+	
+	# Otherwise, generate the apropriate header...
+	# And send the data
+	if (param("OutputType") eq "PDF") {
+		print header(	-type=>'application/pdf',
+				-attachment=>'mychecks.pdf',
+				-cookie=>$cookie);
+
+	# This is bad... running the script a 2nd time... must be a better
+	# way.  Like open(PDF, "|$GS $PDFConvert
+	#open (PDF, "| $PDFConvert");
+	#print PDF $Result;
+	#close(PDF);
+
+	print (`.\/freecheck --cgi \"$pairs_string\" $arguments \| $GS $PDFOptions`);
+	} else {
+		print header(	-type=>'application/postscript',
+				-attachment=>'mychecks.ps',
+				-cookie=>$cookie);
+
+		print $Result;
+	}
+	
+	exit;
 }
 
 sub kill_input {
@@ -346,6 +441,8 @@ sub kill_input {
 	print "entered strings.  Sorry, you can't do that...";
 	print p;
 	print "Please get those funky things out of your form, and try again";
+	print p;
+	print "You can hit the back button to go back to your form.";
 	print end_html;
 	exit;
 }

@@ -63,8 +63,9 @@ use Getopt::Long;
 		BankAddr1		(value)
 		BankAddr2		(value)
 		BankCityStateZip	(value)
-		RoutingNumber		(value)
-		AccountNumber		(value)
+		AuxOnUs			(value)
+		Routing			(value)
+		OnUs			(value)
 		Fraction		(value)
 		PrintVOID		{value}
 		# Styles
@@ -208,8 +209,97 @@ while ( $opt_cgi =~ /(^\w+)\s+?(.*$)/mcg ) {
 	$Definitions{$1} = $2;
 }
 
-# If there's a dash in the account string, replace it with the dash symbol
-$Definitions{"AccountNumber"} =~ s/\-/$Definitions{"DashSymbol"}/g;
+##################
+# Error Checking #
+##################
+
+$error = "";
+
+# Make sure that MICR line is only numbers and symbols
+
+if ( $Definitions{"Routing"} !~ /^R[0-9]+R$/ ) {
+	$error = $error . "Error - Routing number must be numeric, with an \"R\" on each end\n";
+}
+
+if ( $Definitions{"AuxOnUs"} !~ /^[0-9\-CPS]*$/ ) {
+	$error = $error . "Error - Auxiliary On-Us field may only be numeric, with \"-\", and MICR symbols (C,P,S)\n";
+}
+
+if ( $Definitions{"OnUs"} !~ /^[0-9\-CPS]+$/ ) {
+	$error = $error . "Error - On-Us field may only be numeric, with \"-\", and MICR symbols (C,P,S)\n";
+}
+
+if ( $Definitions{"CheckNumber"} !~ /^[0-9]+$/ ) {
+	$error = $error . "Error - Check number must be numeric \n";
+}
+
+if ( $Definitions{"NumPages"} !~ /^[0-9]+$/ ) {
+	$error = $error . "Error - Number of pages must be numeric\n";
+}
+
+if ( $Definitions{"Fraction"} !~ /^[0-9]{2}\s*\-\s*[0-9]{1,4}\s*\/\s*[0-9]{3,4}$/ ) {
+	$error = $error . "Error - Routing fraction must be numeric, with a \"-\" in the numerator\n";
+}
+
+# Get routing symbol and institution number from routing number
+$RoutingSymbol = substr($Definitions{"Routing"},1,4);
+$Institution = substr($Definitions{"Routing"},5,4);
+
+# Strip any leading zeros...
+# Only should be one on routing...
+$RoutingSymbol =~ s/^0//;
+# One or more on institution
+$Institution =~ s/^0+//;
+
+# Fraction format:
+#
+# 2 digits, a "-", institution number (no leading zeros)
+# ------------------------------------------------------
+# routing number (no leading zeros)
+
+
+if ( $Definitions{"Fraction"} !~ /^[0-9]{2}\-${Institution}\/${RoutingSymbol}$/ ) {
+	$error = $error . "Error - Routing fraction does not match routing number\n";
+}
+
+
+# Test the MICR line for correctness 
+if ( length ($Definitions{"Routing"}) != 11 ) {
+	$error = $error . "Error - Routing number must be exactly 9 digits long, with
+				an \"R\" on each end\n";
+}
+
+# Test the MICR checksum
+# Don't forget the real routing number is sandwiched between "Rs"
+
+unless ( ( $Definitions{"Routing"} !~ /^R[0-9]+R$/) || ( length ($Definitions{"Routing"}) != 11 ) ){
+
+	$CheckSum = 0;
+
+	@CheckSumMults = (3, 7, 1, 3, 7, 1, 3, 7);
+	for ($Digit = 1; $Digit < 9; $Digit++) {
+		$CheckSum = $CheckSum +
+			$CheckSumMults[$Digit-1] * substr($Definitions{"Routing"}, $Digit, 1);
+	}
+	
+	$CheckSum = 10 - ($CheckSum % 10);
+
+	# Kludge alert...
+	if ($CheckSum == 10) {
+		$CheckSum = 0;
+	}
+
+	if ( $CheckSum ne substr($Definitions{"Routing"}, 9, 1) ) {
+		$error = $error . "Error - Routing Number Checksum Incorrect\n";
+	}
+}
+
+
+# die() if we got errors
+if ( $error && !$opt_test ) {
+	print $error;
+	die("Errors Encountered\n");
+}
 
 # Print PostScript
 
@@ -225,7 +315,7 @@ Print_Defs();
 Print_Body();
 
 # Update the config file with the new check number, if it's not just a test
-if (!$opt_test) {
+if (!$opt_test && !$opt_cgi) {
 	$next_check_number = $Definitions{"CheckNumber"} 
 		+ ($Definitions{"NumPages"} * $Definitions{"ChecksPerPage"});
 
@@ -340,7 +430,7 @@ sub Get_Sections {
 		if ( $section =~/CheckBlank\s+(.+)/i ) {
 			$checkblanks = "$+ $checkblanks";
 		} elsif ( $section =~/Style\s+(.+)/i ) {
-			$checkstyles = "$+ $styles";
+			$checkstyles = "$+ $checkstyles";
 		} elsif ( $section =~/Account\s+(.+)/i ) {
 			$accounts = "$+ $accounts";
 		} elsif ( $section =~/Global/i ) {
@@ -391,6 +481,7 @@ sub Print_Body {
 # definitions we got from the config file.
 
 print <<END_OF_POSTSCRIPT 
+
 % Other Constants:
 
 % Size of the rectangular box for the amount (digits)
@@ -399,7 +490,8 @@ print <<END_OF_POSTSCRIPT
 
 /LineWidth 		{0.3} def
 
-% Convert CheckNumber integer to a string of appropriate length
+% Max number of digits in check number, and allocate string
+/CheckNumDigits 	4 def
 /CheckNumberString 	CheckNumber log floor 1 add cvi string def
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -418,6 +510,127 @@ print <<END_OF_POSTSCRIPT
 		stringwidth pop neg 0 rmoveto	% Third copy & move back
 		neg 0 exch rmoveto % line down
 	} if
+} def
+
+% Fix up the MICR line components (replace placeholders with MICR
+% characters)
+% Argh... surely there's a better way - anyone? use "forall?"
+
+/FixMICR {
+
+	/CheckNumStart -1 def
+	/CheckNumEnd -1 def
+	/CheckNumInOnUs false def
+	/CheckNumInAuxOnUs false def
+
+	% Get starting and ending positions for check number in
+	% (Aux)OnUs field
+	% (This will break if check number is entered in both fields)
+	
+	OnUs length 1 sub -1 0 {
+		dup  % dups the index
+		OnUs exch get (C) 0 get eq {
+			/CheckNumInOnUs true def
+			% If end number not yet defined, define it
+			CheckNumEnd 0 lt {
+				/CheckNumEnd exch def
+			} {
+				/CheckNumStart exch def
+			} ifelse
+			
+		} {
+			pop
+		} ifelse
+	} for
+	
+	AuxOnUs length 1 sub -1 0 {
+		dup  % dups the index
+		AuxOnUs exch get (C) 0 get eq {
+			/CheckNumInAuxOnUs true def
+			% If end number not yet defined, define it
+			CheckNumEnd 0 lt {
+				/CheckNumEnd exch def
+			} {
+				/CheckNumStart exch def
+			} ifelse
+			
+		} {
+			pop
+		} ifelse
+	} for
+	
+
+	% Replace "R" in routing number with actual transit number symbol
+	% That's it - should be no spaces, dashes, or anything but digits
+	Routing length 1 sub -1 0 {
+		dup  % dups the index
+		Routing exch get (R) 0 get eq {
+			Routing exch TransitSymbol 0 get put
+		} {
+			pop
+		} ifelse
+	} for
+
+	% Replace "S" with space character in AuxOnUs
+	AuxOnUs length 1 sub -1 0 {
+		dup
+		AuxOnUs exch get (S) 0 get eq {
+			AuxOnUs exch ( ) 0 get put
+		} {
+			pop
+		} ifelse
+	} for
+		
+	% Replace "-" with dash character in AuxOnUs
+	AuxOnUs length 1 sub -1 0 {
+		dup
+		AuxOnUs exch get (-) 0 get eq {
+			AuxOnUs exch DashSymbol 0 get put
+		} {
+			pop
+		} ifelse
+	} for	
+
+	% Replace "P" with OnUs character in AuxOnUs
+	AuxOnUs length 1 sub -1 0 {
+		dup
+		OnUs exch get (P) 0 get eq {
+			OnUs exch OnUsSymbol 0 get put
+		} {
+			pop
+		} ifelse
+	} for	
+
+	% Replace "S" with space character in OnUs
+	OnUs length 1 sub -1 0 {
+		dup
+		OnUs exch get (S) 0 get eq {
+			OnUs exch ( ) 0 get put
+		} {
+			pop
+		} ifelse
+	} for	
+
+	% Replace "-" with dash character in OnUs
+	OnUs length 1 sub -1 0 {
+		dup
+		OnUs exch get (-) 0 get eq {
+			OnUs exch DashSymbol 0 get put
+		} {
+			pop
+		} ifelse
+	} for	
+
+	% Replace "P" with OnUs character in OnUs
+	OnUs length 1 sub -1 0 {
+		dup
+		OnUs exch get (P) 0 get eq {
+			OnUs exch OnUsSymbol 0 get put
+		} {
+			pop
+		} ifelse
+	} for	
+
 } def
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -544,43 +757,48 @@ print <<END_OF_POSTSCRIPT
 	CheckWidth 0.25 inch moveto
 	-5.6875 inch 0 inch rmoveto
 	MICRHorTweak MICRVerTweak rmoveto
+	% Now we're at the nominal start of the routing number
 
-	save
-		MICRFontName findfont
-		MICRFontSize scalefont
-		setfont
-		% If wide check, check number goes on the left
-		% with OnUS symbols around it
-		% so pad out the zeros, move back that far + space
-		CheckWidth 8.00 inch ge {
-			(0) stringwidth pop neg
-			CheckNumDigits mul
-			3 add %2 OnUs symbols + space
-			0 rmoveto
-			OnUsSymbol show
-			CheckNumDigits CheckNumberString length sub
-				{ (0) show } repeat
-			CheckNumberString show
-			OnUsSymbol show
-			( ) show
-		} if
-		TransitSymbol show
-		RoutingNumber show
-		TransitSymbol show
-		( ) show
-		% Pad with spaces if acct number is short
-		12 AccountNumber length sub {( ) show} repeat
-		AccountNumber show
-		OnUsSymbol show
-		( ) show
-		% If we have a short check, check number goes here
-		CheckWidth 8.00 inch lt {
-			% Same deal, pad w/ 0s if short check number
-			CheckNumDigits CheckNumberString length sub
-				{ (0) show } repeat
-			CheckNumberString show
-		} if
-	restore
+	MICRFontName findfont
+	MICRFontSize scalefont
+	setfont
+
+	% Number of digits in the CheckNumberString
+	/CheckNumDigit CheckNumberString length 1 sub def
+
+	CheckNumInAuxOnUs {
+		CheckNumEnd -1 CheckNumStart {
+			CheckNumDigit 0 ge {
+				AuxOnUs exch CheckNumberString CheckNumDigit get put
+				/CheckNumDigit CheckNumDigit 1 sub def
+			} {
+				AuxOnUs exch (0) 0 get put
+			} ifelse
+		} for
+	} if
+
+
+	AuxOnUs stringwidth pop neg 0 rmoveto
+	AuxOnUs show
+
+	Routing show
+
+	CheckNumInOnUs {
+		CheckNumEnd -1 CheckNumStart {
+			CheckNumDigit 0 ge {
+				OnUs exch CheckNumberString CheckNumDigit get put
+				/CheckNumDigit CheckNumDigit 1 sub def
+			} {
+				OnUs exch (0) 0 get put
+			} ifelse
+		} for
+	} if
+
+	OnUs show
+		
+	StandardFontName findfont
+	StandardFontSize scalefont
+	setfont
 } def
 
 /DrawCheckNumber {
@@ -652,6 +870,7 @@ print <<END_OF_POSTSCRIPT
  
 	% Convert CheckNumber integer to a string
 	CheckNumber CheckNumberString cvs
+	
 	PrintCheckBody {
 		DrawBankInfo
 		DrawAccountHolderInfo
@@ -675,6 +894,7 @@ print <<END_OF_POSTSCRIPT
 		CheckWidth 0 lineto
 		CheckWidth CheckHeight lineto
 		0 CheckHeight lineto
+
 		0 0 lineto
 
 		DrawVOID
@@ -684,6 +904,10 @@ print <<END_OF_POSTSCRIPT
 
 
 /CurrentPage 1 def
+
+% Replace symbol placeholders with actual glyphs
+% Also get starting and ending position for check number
+FixMICR
 
 NumPages -1 1 {
 	/CheckNumber CheckNumber ChecksPerPage add def
@@ -710,6 +934,7 @@ NumPages -1 1 {
 	/CurrentPage CurrentPage 1 add def
 
 } for
+
 
 END_OF_POSTSCRIPT
 ;

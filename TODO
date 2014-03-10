@@ -3,7 +3,6 @@ Things to do, in no particular order:
  * Implement some sort of bank logo inclusion (.eps file)
  * Fix all the regexp problems that are surely in there
  * Allow for a global config file, and a personal config file
- * Write a CGI version, or include it in the same file
  * Allow some defaults to be set in the config file to shorten command line
  * Tweak PostScript to make sure nothing falls in the "forbidden" MICR area
  * Print receipts or whatever on check blanks that allow space for that

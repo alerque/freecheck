@@ -51,10 +51,10 @@
 /PrintMICRLine		true def
 
 % Number of pages to print
-/NumPages		3 def
+/NumPages		1 def
 
 % Prints a big VOID over the check
-/PrintVOID		true def
+/PrintVOID		false def
 
 % Basic account information
 % -------------------------
@@ -80,11 +80,31 @@
 /BankAddr2		(PO Box 45) def
 /BankCityStateZip	(Anytown, USA 12345) def
 
-% Account Information
-% -------------------
+% MICR Line Information
+% ---------------------
 
-/RoutingNumber		(012345678) def   % Leftmost MICR numbers
-/AccountNumber		(1234567890) def  % Middle MICR numbers
+% This is where you define your MICR line.  Represent the On-Us symbol
+% with a "P", the dash symbol with a "-", and a space with a "S"
+% The routing symbol is represented with an "R"
+
+% Your check number will be filled in in either the Aux ON-US field, or
+% the On-Us field.  Represent the check number spaces with "CCCC" (one
+% "C" for each check digit)
+
+% Auxiliary On-Us field is everything to the left of the leftmost routing
+% symbol (|:) Include trailing spaces!
+/AuxOnUs		() def % Include trailing spaces
+
+% Routing / transit field is everything between, and including, the two
+% routing symbols (|:)  Should be only 9 digits.  Show routing symbols
+% with "R" on each end
+/Routing		(R113000023R) def   % Leftmost MICR numbers
+
+% On-Us field is everything to the RIGHT of the RIGHTMOST routing
+% symbol (|:).  Include LEADING spaces!
+/OnUs			(S005-775011251PSCCCC) def  % Include leading spaces
+
+% This is the fractional number at the top of the check
 /Fraction		(12345/67890) def % Fraction at top of check
 
 % MICR Line placement "Tweaking"
@@ -144,7 +164,7 @@
 
 /CheckHeight		{2.85 inch} def
 /CheckWidth		{5.96 inch} def
-/CheckHorOffset		{2.52 inch} def	% how far are checks from left edge of sheet
+/CheckHorOffset		{2.54 inch} def	% how far are checks from left edge of sheet
 /CheckVerOffset		{2.48 inch} def % how far is bottom check from bottom of sheet
 /ChecksPerPage		{3} def % How many checks are on the sheet? (vertical)
 
@@ -215,6 +235,127 @@
 		stringwidth pop neg 0 rmoveto	% Third copy & move back
 		neg 0 exch rmoveto % line down
 	} if
+} def
+
+% Fix up the MICR line components (replace placeholders with MICR
+% characters)
+% Argh... surely there's a better way - anyone? use "forall?"
+
+/FixMICR {
+
+	/CheckNumStart -1 def
+	/CheckNumEnd -1 def
+	/CheckNumInOnUs false def
+	/CheckNumInAuxOnUs false def
+
+	% Get starting and ending positions for check number in
+	% (Aux)OnUs field
+	% (This will break if check number is entered in both fields)
+	
+	OnUs length 1 sub -1 0 {
+		dup  % dups the index
+		OnUs exch get (C) 0 get eq {
+			/CheckNumInOnUs true def
+			% If end number not yet defined, define it
+			CheckNumEnd 0 lt {
+				/CheckNumEnd exch def
+			} {
+				/CheckNumStart exch def
+			} ifelse
+			
+		} {
+			pop
+		} ifelse
+	} for
+	
+	AuxOnUs length 1 sub -1 0 {
+		dup  % dups the index
+		AuxOnUs exch get (C) 0 get eq {
+			/CheckNumInAuxOnUs true def
+			% If end number not yet defined, define it
+			CheckNumEnd 0 lt {
+				/CheckNumEnd exch def
+			} {
+				/CheckNumStart exch def
+			} ifelse
+			
+		} {
+			pop
+		} ifelse
+	} for
+	
+
+	% Replace "R" in routing number with actual transit number symbol
+	% That's it - should be no spaces, dashes, or anything but digits
+	Routing length 1 sub -1 0 {
+		dup  % dups the index
+		Routing exch get (R) 0 get eq {
+			Routing exch TransitSymbol 0 get put
+		} {
+			pop
+		} ifelse
+	} for
+
+	% Replace "S" with space character in AuxOnUs
+	AuxOnUs length 1 sub -1 0 {
+		dup
+		AuxOnUs exch get (S) 0 get eq {
+			AuxOnUs exch ( ) 0 get put
+		} {
+			pop
+		} ifelse
+	} for
+		
+	% Replace "-" with dash character in AuxOnUs
+	AuxOnUs length 1 sub -1 0 {
+		dup
+		AuxOnUs exch get (-) 0 get eq {
+			AuxOnUs exch DashSymbol 0 get put
+		} {
+			pop
+		} ifelse
+	} for	
+
+	% Replace "P" with OnUs character in AuxOnUs
+	AuxOnUs length 1 sub -1 0 {
+		dup
+		OnUs exch get (P) 0 get eq {
+			OnUs exch OnUsSymbol 0 get put
+		} {
+			pop
+		} ifelse
+	} for	
+
+	% Replace "S" with space character in OnUs
+	OnUs length 1 sub -1 0 {
+		dup
+		OnUs exch get (S) 0 get eq {
+			OnUs exch ( ) 0 get put
+		} {
+			pop
+		} ifelse
+	} for	
+
+	% Replace "-" with dash character in OnUs
+	OnUs length 1 sub -1 0 {
+		dup
+		OnUs exch get (-) 0 get eq {
+			OnUs exch DashSymbol 0 get put
+		} {
+			pop
+		} ifelse
+	} for	
+
+	% Replace "P" with OnUs character in OnUs
+	OnUs length 1 sub -1 0 {
+		dup
+		OnUs exch get (P) 0 get eq {
+			OnUs exch OnUsSymbol 0 get put
+		} {
+			pop
+		} ifelse
+	} for	
+
 } def
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -341,43 +482,48 @@
 	CheckWidth 0.25 inch moveto
 	-5.6875 inch 0 inch rmoveto
 	MICRHorTweak MICRVerTweak rmoveto
+	% Now we're at the nominal start of the routing number
 
-	save
-		MICRFontName findfont
-		MICRFontSize scalefont
-		setfont
-		% If wide check, check number goes on the left
-		% with OnUS symbols around it
-		% so pad out the zeros, move back that far + space
-		CheckWidth 8.00 inch ge {
-			(0) stringwidth pop neg
-			CheckNumDigits mul
-			3 add %2 OnUs symbols + space
-			0 rmoveto
-			OnUsSymbol show
-			CheckNumDigits CheckNumberString length sub
-				{ (0) show } repeat
-			CheckNumberString show
-			OnUsSymbol show
-			( ) show
-		} if
-		TransitSymbol show
-		RoutingNumber show
-		TransitSymbol show
-		( ) show
-		% Pad with spaces if acct number is short
-		12 AccountNumber length sub {( ) show} repeat
-		AccountNumber show
-		OnUsSymbol show
-		( ) show
-		% If we have a short check, check number goes here
-		CheckWidth 8.00 inch lt {
-			% Same deal, pad w/ 0s if short check number
-			CheckNumDigits CheckNumberString length sub
-				{ (0) show } repeat
-			CheckNumberString show
-		} if
-	restore
+	MICRFontName findfont
+	MICRFontSize scalefont
+	setfont
+
+	% Number of digits in the CheckNumberString
+	/CheckNumDigit CheckNumberString length 1 sub def
+
+	CheckNumInAuxOnUs {
+		CheckNumEnd -1 CheckNumStart {
+			CheckNumDigit 0 ge {
+				AuxOnUs exch CheckNumberString CheckNumDigit get put
+				/CheckNumDigit CheckNumDigit 1 sub def
+			} {
+				AuxOnUs exch (0) 0 get put
+			} ifelse
+		} for
+	} if
+
+
+	AuxOnUs stringwidth pop neg 0 rmoveto
+	AuxOnUs show
+
+	Routing show
+
+	CheckNumInOnUs {
+		CheckNumEnd -1 CheckNumStart {
+			CheckNumDigit 0 ge {
+				OnUs exch CheckNumberString CheckNumDigit get put
+				/CheckNumDigit CheckNumDigit 1 sub def
+			} {
+				OnUs exch (0) 0 get put
+			} ifelse
+		} for
+	} if
+
+	OnUs show
+		
+	StandardFontName findfont
+	StandardFontSize scalefont
+	setfont
 } def
 
 /DrawCheckNumber {
@@ -438,9 +584,9 @@
 	setfont
 	newpath
 	CheckWidth 2 div 1 inch moveto
-%	30 rotate
-%	(V O I D) stringwidth pop 0 moveto
-%	(V O I D) true charpath
+	30 rotate
+	(V O I D) stringwidth pop 0 moveto
+	(V O I D) true charpath
 	stroke
 	restore
 } def
@@ -449,6 +595,7 @@
  
 	% Convert CheckNumber integer to a string
 	CheckNumber CheckNumberString cvs
+	
 	PrintCheckBody {
 		DrawBankInfo
 		DrawAccountHolderInfo
@@ -472,6 +619,7 @@
 		CheckWidth 0 lineto
 		CheckWidth CheckHeight lineto
 		0 CheckHeight lineto
+
 		0 0 lineto
 
 		DrawVOID
@@ -481,6 +629,10 @@
 
 
 /CurrentPage 1 def
+
+% Replace symbol placeholders with actual glyphs
+% Also get starting and ending position for check number
+FixMICR
 
 NumPages -1 1 {
 	/CheckNumber CheckNumber ChecksPerPage add def
@@ -507,4 +659,3 @@ NumPages -1 1 {
 	/CurrentPage CurrentPage 1 add def
 
 } for
-

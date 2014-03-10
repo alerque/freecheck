@@ -1,8 +1,12 @@
-FreeCheck v0.1 July 16, 2000
+FreeCheck v0.21 August 12, 2000
 Eric Sandeen, <eric_sandeen@bigfoot.com>
 
-WHY?
----
+-----------------------------------------------
+| READ THE "WARNING" FILE BEFORE YOU PROCEED! |
+-----------------------------------------------
+
+WHY DID YOU WRITE THIS?
+-----------------------
 MIPS/VersaCheck ticked me off with their (IMHO) shoddy check-printing
 application, and their dismal customer service.  So here you go.
 
@@ -16,6 +20,12 @@ www.bizfonts.com, for example.
 
 You must also have either a PostScript printer, or a recent version
 of GhostScript.  FreeCheck generates the check as a PostScript file.
+
+Technically, you must also use MICR toner.  At a minimum, use a real
+laster printer.
+
+Also, you should use security blank check stock, not just plain
+paper.
 
 CONFIGURATION
 -------------

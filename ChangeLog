@@ -3,6 +3,14 @@
 * bug fix
 % change
 
+Version 0.21, August 12, 2000
+	% Changed the way the MICR line is generated & entered
+	  (See the freecheck.cfg file for details - it's changed)
+	  Previous algorithm was not flexible enough to generate
+	  many MICR lines out there.  Should now handle all cases.
+	+ Added MICR line error checking - routing number checksum, etc.
+	  (Disabled with --test option)
+
 Version 0.2, July 22, 2000
 	+ Added error checking for nonexistant acct/style/blank
 	+ Added options to show available accts/styles/blanks
