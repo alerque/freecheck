@@ -1,2 +1,29 @@
++ added
+- removed
+* bug fix
+% change
+
+Version 0.2, July 22, 2000
+	+ Added error checking for nonexistant acct/style/blank
+	+ Added options to show available accts/styles/blanks
+	+ Added centimeter ("cm") def - dims can now be in cm
+	% Changed style section definition a bit (no "CheckHeight mul")
+	+ Added --cgi option to pass config from another script (cgi)
+	+ Added simple cgi script to accomplish above interface...
+	+   cgi script uses cookies to save parameters
+	* Strip whitespace from end of lines in config file
+	+ Replace dash ("-") in account number with dash symbol, if entered
+	+ Made number of digits in check number configurable (leading 0's)
+	  Cleaned up PostScript a bit:
+	% 	Prints acct number left of routing number for large checks
+		(and changed logic around check number string a bit)
+	-	Removed commented-out sections
+	*	Only prints stub when check body is printed
+	*	Only prints check border lines if --test requested
+
 Version 0.1, July 16, 2000
 	First semi-distributed version
+
+
+	
+	  	

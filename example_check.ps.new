@@ -54,7 +54,7 @@
 /NumPages		3 def
 
 % Prints a big VOID over the check
-/PrintVOID		true def
+/PrintVOID		false def
 
 % Basic account information
 % -------------------------
@@ -144,7 +144,7 @@
 
 /CheckHeight		{2.85 inch} def
 /CheckWidth		{5.96 inch} def
-/CheckHorOffset		{2.52 inch} def	% how far are checks from left edge of sheet
+/CheckHorOffset		{2.54 inch} def	% how far are checks from left edge of sheet
 /CheckVerOffset		{2.48 inch} def % how far is bottom check from bottom of sheet
 /ChecksPerPage		{3} def % How many checks are on the sheet? (vertical)
 
@@ -438,9 +438,9 @@
 	setfont
 	newpath
 	CheckWidth 2 div 1 inch moveto
-%	30 rotate
-%	(V O I D) stringwidth pop 0 moveto
-%	(V O I D) true charpath
+	30 rotate
+	(V O I D) stringwidth pop 0 moveto
+	(V O I D) true charpath
 	stroke
 	restore
 } def
