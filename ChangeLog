@@ -3,6 +3,20 @@
 * bug fix
 % change
 
+Version 0.3, October 15, 2002
+	+ Support for multiple check layouts.
+	+ Quicken/QuickBooks compatible check layouts.
+	+ EPS logo support
+	+ New check blank definitions, MVD3003 and MVP3001.
+	+ PostScript string substitution proc
+	% modified FixMICR to use new string substitution proc
+	* fixed bug where defaults would override the command line
+	* fixed bug where ShowAndCR would leave arguments on the stack
+	* modified some loops to use repeat since they where not
+          using the index number that was being pushed on the stack by
+          'for' and were not popping it off either.
+
+
 Version 0.21, August 12, 2000
 	% Changed the way the MICR line is generated & entered
 	  (See the freecheck.cfg file for details - it's changed)

@@ -1,0 +1,15 @@
+                               FreeCheck NEWS
+------------------------------------------------------------------------------
+
+October 2002:
+
+    In addition to squashing a few minor bugs, James Klicman added
+    the following features:
+
+        * Two new Quicken/QuickBooks compatible check layouts,
+          QStandard and QWallet.
+
+        * EPS logo support
+
+        * Two new check blank definitions, MVD3000 and MVP3001. 
+

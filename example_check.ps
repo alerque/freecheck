@@ -1,211 +1,71 @@
-%!
-%---------------
-%
-%    FreeCheck - a free check printing application released
-%                under the GNU General Public Licene.
-%
-%    Copyright (C) 2000 Eric Sandeen (eric_sandeen@bigfoot.com)
-%
-%    This program is free software; you can redistribute it and/or modify
-%    it under the terms of the GNU General Public License as published by
-%    the Free Software Foundation; either version 2 of the License, or
-%    (at your option) any later version.
-%
-%    This program is distributed in the hope that it will be useful,
-%    but WITHOUT ANY WARRANTY; without even the implied warranty of
-%    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%    GNU General Public License for more details.
-%
-%    You should have received a copy of the GNU General Public License
-%    along with this program; if not, write to the Free Software
-%    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-%
-%---------------
-
-% Let's get this out of the way first:
+%!PS-Adobe-3.0
+%%Title: FreeCheck
+%%LanguageLevel: 2
+%%EndComments
+%%BeginProlog
 /inch {72 mul} def
-
-%%%%%%%%%%%%%%%%%%%%%
-% Account info      %
-% Text on the check %
-% (The Account File)%
-%%%%%%%%%%%%%%%%%%%%%
-
-
-% Things to define at each printing
-% ---------------------------------
-% ---------------------------------
-
-% Check number
-% ------------
-% Check number for first check on the page
-
-/CheckNumber 		100 def
-
-% Parts to print
-% --------------
-% What exactly do we want to print?  This is so that people can use
-% special MICR toner if they want, and print two-pass
-
-/PrintCheckBody		true def
-/PrintMICRLine		true def
-
-% Number of pages to print
-/NumPages		1 def
-
-% Prints a big VOID over the check
-/PrintVOID		false def
-
-% Basic account information
-% -------------------------
-% -------------------------
-
-% Account Holder's Name, etc
-% --------------------------
-% If Name2 or Address2 are empty, they will not be printed
-
-/Name1			(JOHN SMITH) def
-/Name2			(MARY SMITH) def
-/Address1		(1234 Main Street) def
-/Address2		() def
-/CityStateZip		(Anytown, USA 12345) def
-/PhoneNumber		(512-555-1212) def
-
-% Bank information
-% ----------------
-% If BankAddr2 is empty, it will not be printed
-
-/BankName		(GlobalMegaCorp, NA) def
-/BankAddr1		(123 Main Street) def
-/BankAddr2		(PO Box 45) def
-/BankCityStateZip	(Anytown, USA 12345) def
-
-% MICR Line Information
-% ---------------------
-
-% This is where you define your MICR line.  Represent the On-Us symbol
-% with a "P", the dash symbol with a "-", and a space with a "S"
-% The routing symbol is represented with an "R"
-
-% Your check number will be filled in in either the Aux ON-US field, or
-% the On-Us field.  Represent the check number spaces with "CCCC" (one
-% "C" for each check digit)
-
-% Auxiliary On-Us field is everything to the left of the leftmost routing
-% symbol (|:) Include trailing spaces!
-/AuxOnUs		() def % Include trailing spaces
-
-% Routing / transit field is everything between, and including, the two
-% routing symbols (|:)  Should be only 9 digits.  Show routing symbols
-% with "R" on each end
-/Routing		(R113000023R) def   % Leftmost MICR numbers
-
-% On-Us field is everything to the RIGHT of the RIGHTMOST routing
-% symbol (|:).  Include LEADING spaces!
-/OnUs			(S005-775011251PSCCCC) def  % Include leading spaces
-
-% This is the fractional number at the top of the check
-/Fraction		(12345/67890) def % Fraction at top of check
-
-% MICR Line placement "Tweaking"
-%-------------------------------
-% We add the MICR tweaking here (rather than in the check
-% blank definition) because it's likely the user will
-% need to change this.  The blank definition may not be
-% writeable by the user
-
-/MICRVerTweak		{0} def
-/MICRHorTweak		{0} def
-
-%%%%%%%%%%%%%%%%%%%%%%%%%
-% Check Style           %
-% Fonts and Layout Info %
-% (The Style File)      %
-%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Font Names & Sizes
-% ------------------
-% The StandardFontSize is just the basic size for non-MICR
-% text.  Things get scaled a bit from there (Names are larger than 
-% addresses, etc)
-
-/StandardFontName	/AvantGarde-Book def
-/StandardFontSize	9 def
-
-% This is NOT THE MICR FONT!  It is the check number on top right
-/CheckNumFont /Helvetica-Bold def
-/CheckNumSize 14 def
-
-% Margins, etc, within the check itself
-% -------------------------------------
-
-/LeftMargin		{0.2 inch} def
-/RightMargin 		{0.4 inch} def
-/TopMargin		{0.2 inch} def
-
-% Check feature placement
-% -----------------------
-% (relative to bottom left corner of check)
-
-/MemoLineHeight		{0.25} def
-/SignatureLineHeight	{0.25} def
-/AmountLineHeight	{0.50} def
+/PrintCheckBody	{true} def
+/LogoHeight	{0.6 inch} def
+/MemoLineHeight	{0.25} def
 /PayeeLineHeight	{0.60} def
-/BankInfoHeight		{0.45} def
-/DateLineHeight		{0.75} def
+/Routing	(R123456780R) def
+/SignatureLineHeight	{0.25} def
+/CheckHeight	{2.83 inch} def
+/OnUs	(S4232268154PSCCCC) def
+/TransitSymbol	(A) def
+/LeftMargin	{0.20 inch} def
+/NumPages	{1} def
+/MICRFontSize	{12} def
+/MICRHorTweak	{0} def
+/Fraction	(37-5678/1234) def
+/OnUsSymbol	(C) def
+/DashSymbol	(D) def
+/CheckNumFontName	/Helvetica-Bold def
+/BankCityStateZip	(Anytown, USA 12345) def
+/StandardFontSize	{9} def
+/DateLineHeight	{0.75} def
+/Name1	(JOHN SMITH) def
+/Name2	(MARY SMITH) def
+/CheckVerOffset	{2.50 inch} def
+/CheckNumDigits	{4} def
+/CheckLayout	/Original def
+/LineWidth	{0.3} def
+/AmountSymbol	(B) def
+/LogoBorder	{0.0312 inch} def
+/TopMargin	{0.20 inch} def
+/CityStateZip	(Anytown, USA 12345) def
+/PrintVOID	{false} def
+/LogoPadding	{0.0625 inch} def
+/BankInfoHeight	{0.45} def
+/MICRFontName	/GnuMICR def
+/CheckHorOffset	{2.50 inch} def
+/BankAddr1	(6780 Main Street) def
+/AmountLineHeight	{0.50} def
+/BankAddr2	(Suite 45) def
+/PhoneNumber	(512-555-1212) def
+/PrintMICRLine	{true} def
+/StandardFontName	/AvantGarde-Book def
+/Address1	(1234 Main Street) def
+/Address2	() def
+/BankName	(MegaCorp Bank, NA) def
+/AuxOnUs	() def
+/CheckWidth	{6.00 inch} def
+/CheckNumber	{196} def
+/ChecksPerPage	{3} def
+/MICRVerTweak	{0} def
+/RightMargin	{0.25 inch} def
+/CheckNumFontSize	{14} def
+/LogoWidth	{0.7 inch} def
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Check Blank Dimensions %
-% (The Check Blank File) %
-%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This is the main body of the postscript file, that acts on all of the
+% definitions we got from the config file.
 
-% Information about how the checks are laid out on the page
-% ---------------------------------------------------------
-
-/CheckHeight		{2.85 inch} def
-/CheckWidth		{5.96 inch} def
-/CheckHorOffset		{2.54 inch} def	% how far are checks from left edge of sheet
-/CheckVerOffset		{2.48 inch} def % how far is bottom check from bottom of sheet
-/ChecksPerPage		{3} def % How many checks are on the sheet? (vertical)
-
-%%%%%%%%%%%%%%%%%%%%%%%
-% Global Setup Values %
-%%%%%%%%%%%%%%%%%%%%%%%
-
-% MICR Font
-% ---------
-% For the MICR font, SIZE MATTERS!  Make sure you have the right point
-% size for the particular MICR font you're using.  Most (including
-% GnuMICR) are correct at 12 pts, but READ THE DOCS THAT CAME WITH
-% THE FONT!  :)
-
-/MICRFontName		/GnuMICR def
-/MICRFontSize		12 def
-
-% MICR Symbol Mapping
-% -------------------
-% Maps which characters show which MICR symbols in the font you're using
-% Approximate representations of these symbols, with names, below:
-% |: = TransitNumberSymbol
-% /  = Amount
-% P  = OnUs
-% -  = Dash
-
-/TransitSymbol		(A) def
-/OnUsSymbol		(C) def
-/AmountSymbol		(B) def
-/DashSymbol		(D) def
-
-% MICR Line placement
-% -------------------
-% This should be smack in the middle of the tolerance band...
-% Tweaks are accomplished by the user in the Global section
-
-/MICRLineHeight		{0.25 inch} def
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% End of user entered information %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Available Check Layouts
+/CheckLayoutDict <<
+    /Original { DrawOriginalCheckBody }
+    /QStandard { DrawQStandardCheckBody }
+    /QWallet { DrawQWalletCheckBody }
+>> def
 
 % Other Constants:
 
@@ -213,29 +73,69 @@
 /AmountBoxWidth		{1 inch} def
 /AmountBoxHeight	{0.25 inch} def
 
-/LineWidth 		{0.3} def
-
 % Max number of digits in check number, and allocate string
 /CheckNumDigits 	4 def
 /CheckNumberString 	CheckNumber log floor 1 add cvi string def
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Helpful Printing Routines %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Helpful Printing Routines                                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Shows a line, then does a "carriage return / line feed"
 % But only if the string exists (more than 0 chars)
 % (How do we get the current font size (height)?)
 
 /ShowAndCR {
-	% A couple copies of the string (now 3 on stack)
-	dup dup
-	length 0 gt {	% First copy
-		show		% Second copy
-		stringwidth pop neg 0 rmoveto	% Third copy & move back
+	% if 
+	dup length 0 gt	% First copy
+	{
+		dup show		% Second copy
+		stringwidth pop neg 0 rmoveto	% Original copy & move back
 		neg 0 exch rmoveto % line down
-	} if
+	}
+	% else
+	{
+	    pop % discard (string)
+	    pop % discard height
+	}
+	ifelse
 } def
+
+%%BeginProcSet: substitute
+%%Creator: James Klicman <james@klicman.org>
+%%CreationDate: October 2002
+%%Version: 0.3
+%
+% (string) (O) (N)  substitute  -
+%
+% example:  (A?C) (?) (B)  substitute -> (ABC)
+%
+/substitute {
+    0 get exch 0 get exch % convert (O) and (N) to char codes
+    0 % counter
+    3 index % (string) {} forall
+    {
+        % ^ (string) O N counter C
+        3 index % (O)[0]
+        eq % (string)[i] == (O)[0]
+        {
+            % ^ (string) O N counter
+            3 index % (string)
+            % ^ (string) O N counter (string)
+            1 index % counter
+            % ^ (string) O N counter (string) counter
+            3 index % N
+            % ^ (string) O N counter (string) counter N
+            put % (string) counter N put
+        } if
+        1 add % increment counter
+    } forall
+    pop % counter
+    pop % N
+    pop % O
+    pop % (string)
+} def
+%%EndProcSet
 
 % Fix up the MICR line components (replace placeholders with MICR
 % characters)
@@ -287,80 +187,31 @@
 
 	% Replace "R" in routing number with actual transit number symbol
 	% That's it - should be no spaces, dashes, or anything but digits
-	Routing length 1 sub -1 0 {
-		dup  % dups the index
-		Routing exch get (R) 0 get eq {
-			Routing exch TransitSymbol 0 get put
-		} {
-			pop
-		} ifelse
-	} for
+	Routing (R) TransitSymbol substitute
 
 	% Replace "S" with space character in AuxOnUs
-	AuxOnUs length 1 sub -1 0 {
-		dup
-		AuxOnUs exch get (S) 0 get eq {
-			AuxOnUs exch ( ) 0 get put
-		} {
-			pop
-		} ifelse
-	} for
+	AuxOnUs (S) ( ) substitute
 		
 	% Replace "-" with dash character in AuxOnUs
-	AuxOnUs length 1 sub -1 0 {
-		dup
-		AuxOnUs exch get (-) 0 get eq {
-			AuxOnUs exch DashSymbol 0 get put
-		} {
-			pop
-		} ifelse
-	} for	
+	AuxOnUs (-) DashSymbol substitute
 
 	% Replace "P" with OnUs character in AuxOnUs
-	AuxOnUs length 1 sub -1 0 {
-		dup
-		OnUs exch get (P) 0 get eq {
-			OnUs exch OnUsSymbol 0 get put
-		} {
-			pop
-		} ifelse
-	} for	
+	AuxOnUs (P) OnUsSymbol substitute
 
 	% Replace "S" with space character in OnUs
-	OnUs length 1 sub -1 0 {
-		dup
-		OnUs exch get (S) 0 get eq {
-			OnUs exch ( ) 0 get put
-		} {
-			pop
-		} ifelse
-	} for	
+	OnUs (S) ( ) substitute
 
 	% Replace "-" with dash character in OnUs
-	OnUs length 1 sub -1 0 {
-		dup
-		OnUs exch get (-) 0 get eq {
-			OnUs exch DashSymbol 0 get put
-		} {
-			pop
-		} ifelse
-	} for	
+	OnUs (-) DashSymbol substitute
 
 	% Replace "P" with OnUs character in OnUs
-	OnUs length 1 sub -1 0 {
-		dup
-		OnUs exch get (P) 0 get eq {
-			OnUs exch OnUsSymbol 0 get put
-		} {
-			pop
-		} ifelse
-	} for	
+	OnUs (P) OnUsSymbol substitute
 
 } def
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Feature Printing Routines %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Original Feature Printing Routines                                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 /DrawMemoLine {
 	LeftMargin MemoLineHeight CheckHeight mul moveto
@@ -395,6 +246,21 @@
 	LeftMargin CheckHeight moveto
 	0 TopMargin neg rmoveto
 	0 StandardFontSize neg rmoveto
+
+    % make room for Logo if specified
+    /LogoForm where {
+        pop % discard dict
+        LogoWidth
+        /LogoBorder where {
+            pop % discard dict
+            LogoBorder 2 div add
+        } if
+        /LogoPadding where {
+            pop % discard dict
+            LogoPadding 2 div add
+        } if
+        0 rmoveto
+    } if
 
 	StandardFontSize Name1 ShowAndCR
 	StandardFontSize Name2 ShowAndCR
@@ -476,6 +342,589 @@
 
 } def
 
+/DrawCheckNumber {
+	CheckWidth CheckHeight moveto
+	RightMargin neg TopMargin neg rmoveto
+	CheckNumFontName findfont
+	CheckNumFontSize scalefont
+	setfont
+
+	CheckNumberString stringwidth pop neg 0 rmoveto
+	0 -14 rmoveto
+	CheckNumberString show
+
+	StandardFontName findfont
+	StandardFontSize scalefont
+	setfont
+} def
+
+/DrawFraction {
+	0.6 CheckWidth mul CheckHeight moveto
+	0 TopMargin neg rmoveto
+	0 StandardFontSize neg rmoveto
+	Fraction show
+} def
+
+/DrawStub {
+	CheckHorOffset 2 inch ge {
+		save
+		newpath
+		CheckHorOffset neg 0 translate
+		StandardFontName findfont
+		StandardFontSize 1 sub scalefont
+		setfont
+		/StubSpacing {CheckHeight 6 div} def
+		CheckHorOffset 2 div StubSpacing 5 mul moveto
+		CheckNumberString show
+		0.3 inch StubSpacing 4 mul moveto
+		(Date ) show
+		CheckHorOffset 0.3 inch sub StubSpacing 4 mul lineto
+		0.3 inch StubSpacing 3 mul moveto
+		(Payee ) show
+		CheckHorOffset 0.3 inch sub StubSpacing 3 mul lineto
+		0.3 inch StubSpacing 2 mul moveto
+		(Amount ) show
+		CheckHorOffset 0.3 inch sub StubSpacing 2 mul lineto
+		0.3 inch StubSpacing 1 mul moveto
+		(Memo ) show
+		CheckHorOffset 0.3 inch sub StubSpacing 1 mul lineto
+		stroke
+		restore
+	} if
+} def	
+
+/DrawOriginalCheckBody {
+	DrawBankInfo
+	DrawAccountHolderInfo
+	DrawMemoLine
+	DrawSignatureLine
+	DrawAmountLine
+	DrawPayeeLine
+	DrawCheckNumber
+	DrawFraction
+	DrawDateLine
+    /DrawLogo where { pop DrawLogo } if
+	DrawStub
+} def
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% QStandard & QWallet Feature Printing Routines                              %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%BeginProcSet: nextline
+%%Creator: James Klicman <james@klicman.org>
+%%CreationDate: October 2002
+%%Version: 0.3
+
+%
+% state used by initline and nextline
+%
+/LINESTATE <<
+    /x 0
+    /y 0
+    /rx 0
+    /ry 0
+>> def
+
+%
+%   LineHeight  initline  -
+%
+/initline {
+    LINESTATE begin
+        currentpoint
+        /y exch def
+        /x exch def
+        /ty exch def
+        /tx exch def
+    end
+} def
+
+%
+%   -  nextline  -
+%
+/nextline {
+    LINESTATE begin
+        x tx add
+        dup /x exch def % x += tx
+        y ty add
+        dup /y exch def % y += ty
+        moveto % x y moveto
+    end
+} def
+%%EndProcSet
+
+
+%%BeginProcSet: alignment
+%%Creator: James Klicman <james@klicman.org>
+%%CreationDate: October 2002
+%%Version: 0.3
+%
+%   (string)  centeralign  (string)
+%
+/centeralign {
+    dup % dup (string)
+    stringwidth % calculate string xWidth, yHeight
+    pop % discard yHeight
+    2 div neg % -(xWidth / 2)
+    0 rmoveto % rmoveto center
+} def
+
+%
+%   (string)  rightalign  (string)
+%
+/rightalign {
+    dup stringwidth % calculate string xWidth, yHeight
+    pop % discard yHeight
+    neg 0 rmoveto % -xWidth 0 rmoveto
+} def
+
+%
+%   (string)  stringbbox  x1 y1 x2 y2
+%
+%   This procedure is based on the method described in Chapter 5 page 333
+%   of the PostScript Language Reference third edition.
+%
+/stringbbox {
+    gsave
+    newpath 0 0 moveto false charpath flattenpath pathbbox % x1 y1 x2 y2 
+    grestore
+} def
+
+%
+%   (string)  topalign  (string)
+%
+/topalign {
+    dup stringbbox % ^+ x1 y1 x2 y2
+    neg 0 exch rmoveto % 0 -y2 rmoveto
+    pop % x2
+    pop % y1
+    pop % x1
+} def
+
+%
+%   (string)  bottomalign  (string)
+%
+/bottomalign {
+    dup stringbbox % ^+ x1 y1 x2 y2
+    pop % y2
+    pop % x2
+    neg 0 exch rmoveto % 0 -y1 rmoveto
+    pop % x1
+} def
+%%EndProcSet
+
+
+%%BeginProcSet: qchecks
+%%Creator: James Klicman <james@klicman.org>
+%%CreationDate: October 2002
+%%Version: 0.3
+
+/QStandardConfig <<
+    /RightMarginX CheckWidth RightMargin sub
+    /UnderlineOffset -3
+    /MemoLineWidth 3.25 inch
+    /SignatureLineWidth 3.25 inch
+    /PayToTheOrderOf {
+            currentpoint % oldpoint
+            0 StandardFontSize rmoveto  % move up one line
+            (PAY TO THE) show
+            moveto % oldpoint moveto
+            (ORDER OF ) show
+        }
+    % QStandard Coords, Check Size 8.5" x 3.5"
+    /Date [ 503.08 183.44]
+    /Amount [ 499.96 147.44 ]
+    /Verbal [ 36.04 123.44 ]
+    /Payee [ 84.04 147.44 ]
+    /Memo [ 63.16 39.44 ]
+    /Address [ 72.04 99.44 ]
+    /Stub false
+>> def
+
+/QWalletConfig <<
+    /RightMarginX CheckWidth RightMargin sub
+    /UnderlineOffset -2
+    /MemoLineWidth 2.5 inch
+    /SignatureLineWidth 2.5 inch
+    /PayToTheOrderOf {
+            0 StandardFontSize 2 mul rmoveto  % move up two lines
+            0 StandardFontSize neg initline
+            (PAY) show nextline
+            (TO THE) show nextline
+            (ORDER OF ) show
+        }
+    % QWallet Coords, Check Size 6" x 2.8333"
+    /Date [ 346.12 147.44 ]
+    /Amount [ 331.96 135.44 ]
+    /Verbal [ 24.04 123.44 ]
+    /Payee [ 46.12 135.44 ]
+    /Address [ 25.0 99.44 ]
+    /Memo [ 45.16 39.44 ]
+    /Stub true
+    /StubDate [ 31.96 147.44 ]
+    /StubPayee [ 31.96 123.44 ]
+    /StubAmount [ 52.12 87.44 ]
+    /StubMemo [ 31.96 63.44 ]
+    /StubCategory [ 31.96 39.44 ]
+    /StubAccount [ 31.96 15.44 ]
+>> def
+
+
+%
+%   /name  (label)  DrawQLabeline-rightmargin  -
+%
+%   draw label and underline to right margin
+%
+/DrawQLabeline-rightmargin {
+    % show label
+    % ^ /name (label)
+    exch QCONFIG exch get aload pop  % ^ (label) X Y
+    2 copy  % ^ (label) X Y X Y
+    moveto  % X Y moveto
+    3 -1 roll  % (label) X Y -> X Y (label)
+    rightalign show  % (label) rightalign show
+
+    % ^ X Y
+
+    Underline { % if
+        % underline
+        % line goes from end of label to right margin
+        % ^ X Y
+        exch ( ) stringwidth pop sub exch % backup X one space
+        QCONFIG /UnderlineOffset get add % adjust underline position
+        newpath
+        dup  % UnderlineY dup
+        3 1 roll  % X, Y, Y -> Y, X, Y
+        moveto  % X Y moveto 
+        % UnderlineY is on the stack
+
+        QCONFIG /RightMarginX get
+        exch lineto % RightMarginX UnderlineY lineto
+        stroke
+    }
+    % else
+    { pop pop }
+    ifelse
+} def
+
+/DrawQDate {
+    /Date (Date  ) DrawQLabeline-rightmargin
+} def
+
+/DrawQAmount {
+    /Amount ($  ) DrawQLabeline-rightmargin
+} def
+
+/DrawQPayee {
+    % label: PAY TO THE ORDER OF
+    LeftMargin
+    QCONFIG /Payee get 1 get  % PayeeY
+    moveto  % LeftMargin PayeeY moveto
+    QCONFIG /PayToTheOrderOf get exec
+
+    Underline { % if
+        % underline: Payee
+        % line goes from end of "ORDER OF" to beginning of "$ amount"
+        currentpoint
+        QCONFIG /UnderlineOffset get add % CurrentY + UnderlineOffset
+        newpath
+        dup  % UnderlineY dup
+        3 1 roll  % X, Y, Y -> Y, X, Y
+        moveto  % X Y moveto 
+        % ^ UnderlineY
+
+        QCONFIG /Amount get 0 get  % AmountX
+        ( $  ) stringwidth pop % AdjustX
+        sub % PayeeLineEndX = AmountX - AdjustX
+
+        exch lineto % PayeeLineEndX UnderlineY lineto
+        stroke
+    } if
+} def
+
+/DrawQVerbal {
+    % label: Dollars
+    QCONFIG /RightMarginX get
+    ( DOLLARS) stringwidth
+	pop % discard yHeight
+    sub % RightMarginX - StringWidthX
+
+    % ^ LabelX
+
+    QCONFIG /Verbal get 1 get % VerbalY
+    2 copy  % LabelX VerbalY 2 copy
+    moveto  % LabelX VerbalY moveto
+    ( DOLLARS) show
+
+    % ^ LabelX VerbalY
+
+    Underline { % if
+        newpath
+        QCONFIG /UnderlineOffset get add % VerbalY + UnderlineOffset
+        dup % dup UnderlineY
+        3 1 roll % X Y Y -> Y X Y
+        moveto % LabelX UnderlineY moveto
+
+        LeftMargin exch lineto % LeftMargin UnderlineY lineto
+
+        stroke
+    }
+    % else
+    { pop pop } 
+    ifelse
+} def
+
+/DrawQMemo {
+    % label: Memo
+    LeftMargin
+    QCONFIG /Memo get 1 get % MemoY
+    moveto  % LeftMargin MemoY moveto
+    (Memo ) show
+
+    Underline { % if
+        % underline: Memo
+        0 QCONFIG /UnderlineOffset get rmoveto  % 0 UnderlineOffset rmoveto
+        currentpoint
+        newpath
+        moveto % currentpoint moveto
+        QCONFIG /MemoLineWidth get 0 rlineto
+        stroke
+    } if
+} def
+
+/DrawQSignature {
+    QCONFIG /RightMarginX get
+
+    % if
+    userdict /SignatureLineHeight known
+    {
+        SignatureLineHeight
+    }
+    % else
+    {
+        QCONFIG /Memo get 1 get % MemoY
+        QCONFIG /UnderlineOffset get % UnderlineOffset
+        add % MemoY UnderlineOffset add
+    } ifelse
+    
+    % ^ RightMarginX SignatureY
+    newpath
+    moveto % RightMarginX UnderlineY moveto
+    QCONFIG /SignatureLineWidth get neg 0 rlineto
+    stroke
+} def
+
+%
+%   [(string) ...] boldlines  DrawQInfo  -
+%
+%   Draw array of strings as separate lines of text centered and topaligned
+%   to the currentpoint. Null strings are skipped. If the string is non-null
+%   and it's index is less than boldlines, the bold font is used.
+%
+/DrawQInfo {
+    0 % counter
+    false % istopaligned
+    % ^ [(string)] boldlines counter istopaligned
+    4 -1 roll % ^ boldlines counter istopaligned [(string)]
+    {
+        % ^ boldlines counter istopaligned (string)
+        dup length 0 gt { % if
+
+            % bold font if one of boldlines
+            2 index % counter
+            4 index % boldlines
+            lt {
+	currentfont % save font to stack
+	BoldFontName findfont
+	StandardFontSize scalefont
+	setfont
+	5 1 roll % ^ font boldlines counter istopaligned (string)
+            } if
+
+            exch % ^ (string) istopaligned 
+            % if istopaligned
+            {
+	nextline
+	true % istopaligned
+            }
+            % else
+            {
+	topalign
+	0 StandardFontSize neg initline
+	true % istopaligned
+            }
+            ifelse
+
+            exch % ^ istopaligned (string)
+            centeralign show % (string) centeralign show
+
+            % ^ boldlines counter istopaligned
+
+            % restore font if one of boldlines
+            1 index % counter
+            3 index % boldlines
+            lt {
+	% ^ font boldlines counter istopaligned
+	4 -1 roll % ^ boldlines counter istopaligned font
+	setfont % restore font from stack
+            } if
+        }
+        % else
+        { pop } % discard (string) 
+        ifelse
+
+        exch 1 add exch % increment counter
+    } forall
+    pop % discard istopaligned
+    pop % discard counter
+    pop % discard boldlines
+} def
+
+/DrawQBankInfo {
+    QCONFIG /Date get 0 get 4 div 3 mul % DraweeX
+    CheckHeight TopMargin sub % DraweeY
+    moveto % DraweeX DraweeY moveto
+    [ BankName BankAddr1 BankAddr2 BankCityStateZip ] 1 DrawQInfo
+} def
+
+/DrawQAccountHolderInfo {
+    QCONFIG /Date get 0 get 3 div % DraweeX
+    CheckHeight TopMargin sub % DrawerY
+    moveto % DrawerX DrawerY moveto
+    [ Name1 Name2 Address1 Address2 CityStateZip PhoneNumber ] 2 DrawQInfo
+} def
+
+/DrawQCheckNumberAndFraction {
+    currentfont % save font to stack
+    CheckNumFontName findfont
+    CheckNumFontSize scalefont
+    setfont
+
+    CheckWidth RightMargin sub % NumberX
+    CheckHeight TopMargin sub % NumberY
+    moveto % NumberX NumberY moveto
+    CheckNumberString topalign
+    0 StandardFontSize 1.25 mul neg initline
+    rightalign show
+    nextline
+
+    FractionFontName findfont
+    FractionFontSize scalefont
+    setfont
+
+    Fraction topalign rightalign show
+
+    setfont % restore font from stack
+} def
+
+%
+%  LeftX RightX Y (label)  DrawQStubLabeline  -
+%
+/DrawQStubLabeline {
+    4 -1 roll % ^ RightX Y (label) LeftX
+    2 index % Y index
+    moveto  % LeftX Y moveto
+    % ^ RightX Y (label)
+    show % (label) show
+    % ^ RightX Y
+    QCONFIG /UnderlineOffset get % ^ RightX Y UnderlineOffset
+    dup 0 exch rmoveto % Offset start of line
+    add % Y UnderlineOffset add
+    lineto % RightX Y lineto
+} def
+
+/DrawQStub {
+    CheckHorOffset 2 inch ge
+    QCONFIG /Stub get
+    and { % if
+        gsave
+
+        CheckHorOffset neg 0 translate
+
+        newpath
+
+        StandardFontName findfont
+        StandardFontSize 1 sub scalefont
+        setfont
+
+        0.1875 inch % ^ LeftX
+        dup CheckHorOffset exch sub % ^ LeftX RightX
+
+        2 copy % LeftX RightX
+        QCONFIG /StubDate get 1 get % DateY
+        (DATE )
+        DrawQStubLabeline
+
+        2 copy % LeftX RightX
+        QCONFIG /StubPayee get 1 get % PayeeY
+        (PAYEE )
+        DrawQStubLabeline
+
+        2 copy % LeftX RightX
+        QCONFIG /StubAmount get 1 get % AmountY
+        (AMOUNT )
+        DrawQStubLabeline
+
+        2 copy % LeftX RightX
+        QCONFIG /StubMemo get 1 get % MemoY
+        (MEMO )
+        DrawQStubLabeline
+
+        2 copy % LeftX RightX
+        QCONFIG /StubCategory get 1 get % CategoryY
+        (CATG. )
+        DrawQStubLabeline
+
+        2 copy % LeftX RightX
+        QCONFIG /StubAccount get 1 get % AccountY
+        (ACCT. )
+        DrawQStubLabeline
+
+        Underline { stroke } if
+
+        CheckNumFontName findfont
+        CheckNumFontSize scalefont
+        setfont
+
+        % ^ LeftX RightX
+        CheckHeight TopMargin sub  moveto % RightX TextTop moveto
+        CheckNumberString topalign rightalign show
+
+        pop % LeftX
+
+        grestore
+    } if
+} def
+
+/DrawQCheckBody {
+    DrawQDate
+    DrawQAmount
+    DrawQPayee
+    DrawQVerbal
+    DrawQMemo
+    DrawQSignature
+    DrawQBankInfo
+    DrawQAccountHolderInfo
+    DrawQCheckNumberAndFraction
+    DrawQStub
+    /DrawLogo where { pop DrawLogo } if
+} def
+
+/DrawQStandardCheckBody {
+    /QCONFIG QStandardConfig def
+    DrawQCheckBody
+} def
+
+/DrawQWalletCheckBody {
+    /QCONFIG QWalletConfig def
+    DrawQCheckBody
+} def
+%%EndProcSet
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Standard Feature Printing Routines                                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 /DrawMICR {
 	% 0.25 high, 5.6875 from right edge should be in the middle 
 	% of the tolerance band
@@ -526,56 +975,6 @@
 	setfont
 } def
 
-/DrawCheckNumber {
-	CheckWidth CheckHeight moveto
-	RightMargin neg TopMargin neg rmoveto
-	CheckNumFont findfont
-	CheckNumSize scalefont
-	setfont
-
-	CheckNumberString stringwidth pop neg 0 rmoveto
-	0 -14 rmoveto
-	CheckNumberString show
-
-	StandardFontName findfont
-	StandardFontSize scalefont
-	setfont
-} def
-
-/DrawFraction {
-	0.6 CheckWidth mul CheckHeight moveto
-	0 TopMargin neg rmoveto
-	0 StandardFontSize neg rmoveto
-	Fraction show
-} def
-
-/DrawStub {
-	CheckHorOffset 2 inch ge {
-		save
-		newpath
-		CheckHorOffset neg 0 translate
-		StandardFontName findfont
-		StandardFontSize 1 sub scalefont
-		setfont
-		/StubSpacing {CheckHeight 6 div} def
-		CheckHorOffset 2 div StubSpacing 5 mul moveto
-		CheckNumberString show
-		0.3 inch StubSpacing 4 mul moveto
-		(Date ) show
-		CheckHorOffset 0.3 inch sub StubSpacing 4 mul lineto
-		0.3 inch StubSpacing 3 mul moveto
-		(Payee ) show
-		CheckHorOffset 0.3 inch sub StubSpacing 3 mul lineto
-		0.3 inch StubSpacing 2 mul moveto
-		(Amount ) show
-		CheckHorOffset 0.3 inch sub StubSpacing 2 mul lineto
-		0.3 inch StubSpacing 1 mul moveto
-		(Memo ) show
-		CheckHorOffset 0.3 inch sub StubSpacing 1 mul lineto
-		stroke
-		restore
-	} if
-} def	
 
 /DrawVOID {
 	save
@@ -595,18 +994,10 @@
  
 	% Convert CheckNumber integer to a string
 	CheckNumber CheckNumberString cvs
+	pop % discard reference to CheckNumberString
 	
 	PrintCheckBody {
-		DrawBankInfo
-		DrawAccountHolderInfo
-		DrawMemoLine
-		DrawSignatureLine
-		DrawAmountLine
-		DrawPayeeLine
-		DrawCheckNumber
-		DrawFraction
-		DrawDateLine
-		DrawStub
+		CheckLayoutDict CheckLayout get exec
 	} if
 
 	PrintMICRLine {
@@ -627,6 +1018,9 @@
 
 } def
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Main Printing Procedure                                                    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 /CurrentPage 1 def
 
@@ -634,7 +1028,7 @@
 % Also get starting and ending position for check number
 FixMICR
 
-NumPages -1 1 {
+NumPages { % repeat
 	/CheckNumber CheckNumber ChecksPerPage add def
 	CheckHorOffset CheckVerOffset translate
 
@@ -646,16 +1040,17 @@ NumPages -1 1 {
 
 	% Loop through printing checks, starting with the bottom one
 
-	ChecksPerPage -1 1 {
+	ChecksPerPage { % repeat
 		/CheckNumber CheckNumber 1 sub def
 		newpath
 		DrawCheck
 		stroke
 		0 CheckHeight translate
-	} for
+	} repeat
 
 	showpage
+
 	/CheckNumber CheckNumber ChecksPerPage add def
 	/CurrentPage CurrentPage 1 add def
-
-} for
+} repeat
+%%EOF

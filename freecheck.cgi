@@ -5,7 +5,7 @@
 #    FreeCheck - a free check printing application released
 #                under the GNU General Public Licene.
 #
-#    Copyright (C) 2000 Eric Sandeen (eric_sandeen@bigfoot.com)
+#    Copyright (C) 2000 Eric Sandeen (sandeen-freecheck@sandeen.net)
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -72,9 +72,9 @@ if (!param()) {
 	h1('FreeCheck'),
 	"A free check printing utility",
 	br,
-	"Version 0.21",
+	"Version 0.30",
 	br,
-	"Copyright (C) 2000 Eric Sandeen (eric_sandeen @ bigfoot.com)",
+	"Copyright (C) 2000 Eric Sandeen (sandeen-freecheck @ sandeen.net)",
 	hr,
 	"WARNING - unless you're brave, treat this application as a
 	proof-of-concept, rather than a useful utility.  I have not

@@ -1,6 +1,5 @@
 Things to do, in no particular order:
 
- * Implement some sort of bank logo inclusion (.eps file)
  * Fix all the regexp problems that are surely in there
  * Allow for a global config file, and a personal config file
  * Allow some defaults to be set in the config file to shorten command line
@@ -16,4 +15,4 @@ Things to do, in no particular order:
  * Add Document Structuring Convention stuff to the PS file
 
 And finally...
- * Get brave enough to see if one of these puppies actually clears the bank!
+ * Convince someone to have the output professionally tested.

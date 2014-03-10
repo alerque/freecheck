@@ -1,5 +1,6 @@
-FreeCheck v0.21 August 12, 2000
-Eric Sandeen, <eric_sandeen@bigfoot.com>
+FreeCheck v0.30 October 17,2002
+Eric Sandeen, <sandeen-freecheck@sandeen.net>
+James Klicman, <james@klicman.org>
 
 -----------------------------------------------
 | READ THE "WARNING" FILE BEFORE YOU PROCEED! |
@@ -7,14 +8,13 @@ Eric Sandeen, <eric_sandeen@bigfoot.com>
 
 WHY DID YOU WRITE THIS?
 -----------------------
-MIPS/VersaCheck ticked me off with their (IMHO) shoddy check-printing
-application, and their dismal customer service.  So here you go.
+I wanted a free alternative to MIPS/VersaCheck.  'nuff said.
 
 REQUIREMENTS
 ------------
 The first thing that you MUST have to be able to use FreeCheck is a
 good Type 1 MICR font.  I have created one, called "GnuMICR" that I think
-is pretty excellent - but it has not been tested.  :)  There are also
+is pretty excellent - but it has not been well tested.  :)  There are also
 commercial fonts you can buy, if that floats your boat.  See
 www.bizfonts.com, for example.
 
@@ -22,7 +22,7 @@ You must also have either a PostScript printer, or a recent version
 of GhostScript.  FreeCheck generates the check as a PostScript file.
 
 Technically, you must also use MICR toner.  At a minimum, use a real
-laster printer.
+laser printer.
 
 Also, you should use security blank check stock, not just plain
 paper.
@@ -31,7 +31,9 @@ CONFIGURATION
 -------------
 Edit the file freecheck.cfg to add your account information, and define
 any new check blanks or styles you want.   Take a look at the [Global]
-section, too, to set things up for your system.
+section, too, to set things up for your system.  Pay close attention
+to the MICR line specification instructions.  Most configuration instructions
+can be found in this file.  If something's too confusing, let me know.
 
 USAGE
 -----
@@ -69,10 +71,4 @@ That's where the Perl comes in - reading a config file, and generating
 lots of lines of the type
 	/foo {bar} def
 which define what's shown on the page.
-
-The file "example_check.ps" is a fairly well commented example of the
-PostScript that is output by freecheck.  If you want to add something
-to the layout, it may be easier to work with that file, get it going,
-and then add the changes to the perl script.  And send them to me,
-of course!  :-)
 
