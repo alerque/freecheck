@@ -746,8 +746,7 @@ sub Show_Usage {
 	print "  --test                     print but don't increment check number\n";
 	print "                               and print VOID on the check\n";
 	print "  --cgi                      accept string from CGI script (see docs)\n";
-	print "\nconfig file \"freecheck.cfg\" must be in the same directory,\n";
-	print "as the freecheck executable (this will change in the future...)\n";
+	print "\nconfig file \"~/.freecheck.cfg\"\n";
 	die "\n";
 }
 
