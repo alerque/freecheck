@@ -1,0 +1,68 @@
+FreeCheck v0.1 July 16, 2000
+Eric Sandeen, <eric_sandeen@bigfoot.com>
+
+WHY?
+---
+MIPS/VersaCheck ticked me off with their (IMHO) shoddy check-printing
+application, and their dismal customer service.  So here you go.
+
+REQUIREMENTS
+------------
+The first thing that you MUST have to be able to use FreeCheck is a
+good Type 1 MICR font.  I have created one, called "GnuMICR" that I think
+is pretty excellent - but it has not been tested.  :)  There are also
+commercial fonts you can buy, if that floats your boat.  See
+www.bizfonts.com, for example.
+
+You must also have either a PostScript printer, or a recent version
+of GhostScript.  FreeCheck generates the check as a PostScript file.
+
+CONFIGURATION
+-------------
+Edit the file freecheck.cfg to add your account information, and define
+any new check blanks or styles you want.   Take a look at the [Global]
+section, too, to set things up for your system.
+
+USAGE
+-----
+FreeCheck just prints a PostScript file to STDOUT.  That means that you
+must either redirect it to a file, a printer, or a viewer (ggv accepts
+a file on STDIN - I don't think gv does).
+
+So, to print (assuming a PostScript printer, or GhostView filter):
+freecheck.pl <options> | lpr
+
+To view:
+freecheck.pl <options> | ggv
+
+To save a file:
+freecheck.pl <options> > mycheckfile.ps
+
+OPTIONS
+-------
+freecheck doesn't require any options, unless you want it to do something
+useful.  By itself, it will print a couple sheets of standard checks
+with a dummy account.
+
+Type "freecheck --help" to see what options are available
+
+For now, if you get tired of typing all those command line options, just
+edit the defaults at the top of the main script.
+
+HOW DOES IT WORK?
+-----------------
+FreeCheck is a Frankenstein-like combination of PostScript and Perl,
+at this point.  The guts of the check layout are in PostScript, which
+is embedded at the end of the Perl script.  This PostScript depends on
+lots of variable definitions to decide what it should actually print.
+That's where the Perl comes in - reading a config file, and generating
+lots of lines of the type
+	/foo {bar} def
+which define what's shown on the page.
+
+The file "example_check.ps" is a fairly well commented example of the
+PostScript that is output by freecheck.  If you want to add something
+to the layout, it may be easier to work with that file, get it going,
+and then add the changes to the perl script.  And send them to me,
+of course!  :-)
+
