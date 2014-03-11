@@ -1,6 +1,14 @@
                                FreeCheck NEWS
 ------------------------------------------------------------------------------
 
+March 2014:
+
+	Caleb Maclennan copied as much of the project source code and history
+	as he could find and began the process of revamping the aging code for
+	use on modern systems.
+
+		* First up: a system installer and per-user configs
+
 October 2002:
 
     In addition to squashing a few minor bugs, James Klicman added

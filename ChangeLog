@@ -3,6 +3,13 @@
 * bug fix
 % change
 
+Version 0.30.1, March 11, 2O14
+	+ packaged for Archlinux
+	+ began process of updating decade old program
+	+ added installer
+	% move config file to user directory
+
+
 Version 0.3, October 15, 2002
 	+ Support for multiple check layouts.
 	+ Quicken/QuickBooks compatible check layouts.

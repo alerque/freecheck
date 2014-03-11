@@ -9,9 +9,8 @@ Things to do, in no particular order:
    (Print out entire, filled out check, not just empty)
  * Write a GUI around this thing
  * Get more check blank definitions
- * Pass MICR tweaks on command line (?)
- * Include a --print option on command line?
- * Include a --pdf option on command line? (generate PDF, not PS)
+ * Include a --print option on command line
+ * Include a --pdf option on command line
  * Add Document Structuring Convention stuff to the PS file
 
 And finally...

@@ -1,6 +1,7 @@
-FreeCheck v0.30 October 17,2002
+FreeCheck v0.30.1, March 11, 2014
 Eric Sandeen, <sandeen-freecheck@sandeen.net>
 James Klicman, <james@klicman.org>
+Caleb Maclennan, <caleb@alerque.com>
 
 -----------------------------------------------
 | READ THE "WARNING" FILE BEFORE YOU PROCEED! |
@@ -27,9 +28,19 @@ laser printer.
 Also, you should use security blank check stock, not just plain
 paper.
 
+INSTALLATION
+------------
+
+    make prefix=/ install
+
 CONFIGURATION
 -------------
-Edit the file freecheck.cfg to add your account information, and define
+
+On first run the program will copy the system default configuration file to
+your home directory. From there you can edit it with your accounts and any
+custom check styles or layouts.
+
+Edit the file ~/.freecheck.cfg to add your account information, and define
 any new check blanks or styles you want.   Take a look at the [Global]
 section, too, to set things up for your system.  Pay close attention
 to the MICR line specification instructions.  Most configuration instructions
