@@ -274,7 +274,7 @@ $Institution = substr($Definitions{"Routing"},5,4);
 # Only should be one on routing...
 $RoutingSymbol =~ s/^0//;
 # One or more on institution
-$Institution =~ s/^0+//;
+#$Institution =~ s/^0+//;
 
 # Fraction format:
 #
