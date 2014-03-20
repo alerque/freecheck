@@ -609,7 +609,7 @@ if (!$opt_test && !$opt_cgi) {
 
 	$config_file = Replace_Val($config_file, "Account", $opt_account, 
 				"CheckNumber", $next_check_number);
-	write_file ("freecheck.cfg", $config_file);
+	write_file ($ENV{"HOME"} . "/.freecheck.cfg", $config_file);
 }
 
 ###############
